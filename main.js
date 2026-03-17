@@ -186,32 +186,36 @@ ScrollTrigger.create({
   const section = document.querySelector('.gallery-section');
   const items = track.querySelectorAll('.gallery-item');
 
-  // Animate items in from bottom on load/enter
-  gsap.set(items, { opacity: 0, y: 60 });
+  // Show all items immediately
+  gsap.set(items, { opacity: 1, y: 0 });
 
   function buildGalleryScroll() {
-    const totalWidth = track.scrollWidth - window.innerWidth + 96; // 48px padding each side
+    const totalWidth = track.scrollWidth - window.innerWidth + 96;
 
     ScrollTrigger.getAll().filter(t => t.vars.id === 'gallery-scroll').forEach(t => t.kill());
-    scrollTrigger: {
-      trigger: section,
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: 1.2,
-      pin: false,
-      onUpdate: self => {
-        progress.style.width = (self.progress * 100) + '%';
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        id: 'gallery-scroll',
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1.2,
+        pin: false,
+        onUpdate: self => {
+          progress.style.width = (self.progress * 100) + '%';
+        }
       }
-    }
-  });
+    });
 
-  tl.to(track, {
-    x: -totalWidth,
-    ease: 'none'
-  });
+    tl.to(track, { x: -totalWidth, ease: 'none' });
+  }
 
-  // Show all gallery items immediately
-  gsap.set(items, { opacity: 1, y: 0 });
+  if (document.readyState === 'complete') {
+    buildGalleryScroll();
+  } else {
+    window.addEventListener('load', buildGalleryScroll);
+  }
 })();
 
 /* ========================
