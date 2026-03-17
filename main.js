@@ -189,9 +189,10 @@ ScrollTrigger.create({
   // Animate items in from bottom on load/enter
   gsap.set(items, { opacity: 0, y: 60 });
 
-  const totalWidth = track.scrollWidth - window.innerWidth + 96; // 48px padding each side
+  function buildGalleryScroll() {
+    const totalWidth = track.scrollWidth - window.innerWidth + 96; // 48px padding each side
 
-  const tl = gsap.timeline({
+    ScrollTrigger.getAll().filter(t => t.vars.id === 'gallery-scroll').forEach(t => t.kill());
     scrollTrigger: {
       trigger: section,
       start: 'top top',
@@ -209,22 +210,8 @@ ScrollTrigger.create({
     ease: 'none'
   });
 
-  // Stagger reveal items
-  items.forEach((item, i) => {
-    ScrollTrigger.create({
-      trigger: section,
-      start: `top+=${i * 60}% bottom`,
-      once: true,
-      onEnter: () => {
-        gsap.to(item, {
-          opacity: 1, y: 0,
-          duration: 0.9,
-          ease: 'power3.out',
-          delay: i * 0.06
-        });
-      }
-    });
-  });
+  // Show all gallery items immediately
+  gsap.set(items, { opacity: 1, y: 0 });
 })();
 
 /* ========================
